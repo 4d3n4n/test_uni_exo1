@@ -1,0 +1,6 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+exercice8,com.example,Salle,0,15,0,0,0,6,0,2,0,2
+exercice8,com.example,Confirmation,0,21,0,0,0,8,0,4,0,4
+exercice8,com.example,ReservationRefuseeException,0,4,0,0,0,2,0,1,0,1
+exercice8,com.example,Reservation,0,33,0,0,0,12,0,6,0,6
+exercice8,com.example,ReservationService,0,103,1,13,0,21,1,9,0,3

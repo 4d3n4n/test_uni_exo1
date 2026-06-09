@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReservationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">exercice8</a> &gt; <a href="index.source.html" class="el_package">com.example</a> &gt; <span class="el_source">ReservationService.java</span></div><h1>ReservationService.java</h1><pre class="source lang-java linenums">package com.example;
+
+import java.util.List;
+
+public class ReservationService {
+
+    private final SalleRepository salleRepository;
+    private final ReservationRepository reservationRepository;
+    private final NotificationService notificationService;
+
+    public ReservationService(SalleRepository salleRepository,
+                              ReservationRepository reservationRepository,
+<span class="fc" id="L13">                              NotificationService notificationService) {</span>
+<span class="fc" id="L14">        this.salleRepository = salleRepository;</span>
+<span class="fc" id="L15">        this.reservationRepository = reservationRepository;</span>
+<span class="fc" id="L16">        this.notificationService = notificationService;</span>
+<span class="fc" id="L17">    }</span>
+
+    public Confirmation reserver(Reservation reservation) {
+<span class="fc" id="L20">        Salle salle = salleRepository.findByCode(reservation.getCodeSalle());</span>
+<span class="fc bfc" id="L21" title="All 2 branches covered.">        if (salle == null) {</span>
+<span class="fc" id="L22">            throw new ReservationRefuseeException(&quot;Salle inconnue&quot;);</span>
+        }
+<span class="fc bfc" id="L24" title="All 2 branches covered.">        if (reservation.getNbParticipants() &gt; salle.getCapaciteMax()) {</span>
+<span class="fc" id="L25">            throw new ReservationRefuseeException(&quot;Capacité insuffisante&quot;);</span>
+        }
+<span class="fc bfc" id="L27" title="All 2 branches covered.">        if (!reservation.getDateFin().isAfter(reservation.getDateDebut())) {</span>
+<span class="fc" id="L28">            throw new ReservationRefuseeException(&quot;Période invalide&quot;);</span>
+        }
+<span class="fc" id="L30">        List&lt;Reservation&gt; existantes = reservationRepository.findByCodeSalle(reservation.getCodeSalle());</span>
+<span class="fc bfc" id="L31" title="All 2 branches covered.">        for (Reservation existante : existantes) {</span>
+<span class="fc bfc" id="L32" title="All 2 branches covered.">            if (chevauche(existante, reservation)) {</span>
+<span class="fc" id="L33">                throw new ReservationRefuseeException(&quot;Salle déjà réservée&quot;);</span>
+            }
+<span class="fc" id="L35">        }</span>
+<span class="fc" id="L36">        notificationService.envoyerConfirmation(reservation.getEmail());</span>
+<span class="fc" id="L37">        return new Confirmation(reservation.getCodeSalle(), reservation.getEmail(), &quot;Réservation confirmée&quot;);</span>
+    }
+
+    private boolean chevauche(Reservation a, Reservation b) {
+<span class="pc bpc" id="L41" title="1 of 2 branches missed.">        return a.getDateDebut().isBefore(b.getDateFin())</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">                &amp;&amp; b.getDateDebut().isBefore(a.getDateFin());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
