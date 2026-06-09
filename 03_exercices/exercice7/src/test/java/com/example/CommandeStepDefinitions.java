@@ -16,6 +16,8 @@ public class CommandeStepDefinitions {
 
     private Recu recu;
     private CommandeRefuseeException exception;
+    private String referenceCommandee;
+    private int quantiteCommandee;
 
     @Before
     public void setUp() {
@@ -38,6 +40,8 @@ public class CommandeStepDefinitions {
 
     @When("un client {string} commande {int} unité(s) du produit {string}")
     public void unClientCommande(String profil, int quantite, String reference) {
+        this.referenceCommandee = reference;
+        this.quantiteCommandee = quantite;
         try {
             recu = orderService.passerCommande(reference, quantite, ClientType.valueOf(profil));
         } catch (CommandeRefuseeException e) {
@@ -49,6 +53,9 @@ public class CommandeStepDefinitions {
     public void laCommandeEstAcceptee() {
         assertNull(exception, "La commande aurait dû être acceptée");
         assertNotNull(recu);
+        assertEquals(referenceCommandee, recu.getReferenceProduit());
+        assertEquals(quantiteCommandee, recu.getQuantite());
+        assertEquals("Commande confirmée", recu.getMessage());
     }
 
     @And("le montant total est de {double} euros")
