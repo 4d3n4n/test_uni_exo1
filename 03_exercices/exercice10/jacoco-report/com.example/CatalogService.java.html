@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>CatalogService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">exercice10</a> &gt; <a href="index.source.html" class="el_package">com.example</a> &gt; <span class="el_source">CatalogService.java</span></div><h1>CatalogService.java</h1><pre class="source lang-java linenums">package com.example;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * Recherche de produits et navigation par catégorie.
+ */
+public class CatalogService {
+    private final ProductRepository productRepository;
+
+<span class="fc" id="L12">    public CatalogService(ProductRepository productRepository) {</span>
+<span class="fc" id="L13">        this.productRepository = productRepository;</span>
+<span class="fc" id="L14">    }</span>
+
+    public List&lt;Product&gt; searchByKeyword(String keyword) {
+<span class="fc" id="L17">        String needle = keyword.toLowerCase();</span>
+<span class="fc" id="L18">        return productRepository.findAll().stream()</span>
+<span class="fc" id="L19">                .filter(product -&gt; product.getNom().toLowerCase().contains(needle))</span>
+<span class="fc" id="L20">                .collect(Collectors.toList());</span>
+    }
+
+    public List&lt;Product&gt; searchByMaxPrice(int maxPrice) {
+<span class="fc" id="L24">        return productRepository.findAll().stream()</span>
+<span class="fc bfc" id="L25" title="All 2 branches covered.">                .filter(product -&gt; product.getPrix() &lt;= maxPrice)</span>
+<span class="fc" id="L26">                .collect(Collectors.toList());</span>
+    }
+
+    public List&lt;Product&gt; findByCategory(String category) {
+<span class="fc" id="L30">        return productRepository.findAll().stream()</span>
+<span class="fc" id="L31">                .filter(product -&gt; product.getCategorie().equalsIgnoreCase(category))</span>
+<span class="fc" id="L32">                .collect(Collectors.toList());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

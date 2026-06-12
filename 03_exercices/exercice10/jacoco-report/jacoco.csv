@@ -1,0 +1,12 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+exercice10,com.example,AccountService,0,55,0,4,0,12,0,5,0,3
+exercice10,com.example,ProduitAbsentException,0,5,0,0,0,2,0,1,0,1
+exercice10,com.example,Order,0,63,0,2,0,14,0,7,0,6
+exercice10,com.example,OrderService,0,70,0,4,0,19,0,7,0,5
+exercice10,com.example,Confirmation,0,9,0,0,0,4,0,2,0,2
+exercice10,com.example,AuthenticationException,0,4,0,0,0,2,0,1,0,1
+exercice10,com.example,CompteExistantException,0,5,0,0,0,2,0,1,0,1
+exercice10,com.example,Product,0,21,0,0,0,8,0,4,0,4
+exercice10,com.example,CommandeInexistanteException,0,5,0,0,0,2,0,1,0,1
+exercice10,com.example,CatalogService,0,61,0,2,0,13,0,8,0,7
+exercice10,com.example,User,0,18,0,0,0,7,0,3,0,3
