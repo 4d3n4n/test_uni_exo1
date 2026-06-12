@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Frame.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">exercice9</a> &gt; <a href="index.source.html" class="el_package">com.example</a> &gt; <span class="el_source">Frame.java</span></div><h1>Frame.java</h1><pre class="source lang-java linenums">package com.example;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Représente une série (frame) du jeu de bowling.
+ * Phase RED : makeRoll() n'est pas encore implémentée.
+ */
+public class Frame {
+    private int score;
+    private boolean lastFrame;
+    private IGenerateur generateur;
+<span class="fc" id="L14">    private List&lt;Roll&gt; rolls = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L16">    public Frame(IGenerateur generateur, boolean lastFrame) {</span>
+<span class="fc" id="L17">        this.lastFrame = lastFrame;</span>
+<span class="fc" id="L18">        this.generateur = generateur;</span>
+<span class="fc" id="L19">    }</span>
+
+    /**
+     * Effectue un lancer si la série l'autorise encore.
+     * Le nombre de quilles tombées est fourni par le générateur (mocké dans les tests).
+     *
+     * @return true si le lancer a été effectué, false s'il est refusé.
+     */
+    public boolean makeRoll() {
+<span class="fc bfc" id="L28" title="All 2 branches covered.">        if (!canRoll()) {</span>
+<span class="fc" id="L29">            return false;</span>
+        }
+<span class="fc" id="L31">        int pins = generateur.randomPin(maxPinsForNextRoll());</span>
+<span class="fc" id="L32">        rolls.add(new Roll(pins));</span>
+<span class="fc" id="L33">        score += pins;</span>
+<span class="fc" id="L34">        return true;</span>
+    }
+
+    /**
+     * Détermine si un nouveau lancer est autorisé selon le type de série.
+     */
+    private boolean canRoll() {
+<span class="fc" id="L41">        int count = rolls.size();</span>
+<span class="fc bfc" id="L42" title="All 2 branches covered.">        if (!lastFrame) {</span>
+            // Série standard : 2 lancers max, et aucun second lancer après un strike.
+<span class="fc bfc" id="L44" title="All 2 branches covered.">            if (count == 0) {</span>
+<span class="fc" id="L45">                return true;</span>
+            }
+<span class="fc bfc" id="L47" title="All 2 branches covered.">            if (count == 1) {</span>
+<span class="fc bfc" id="L48" title="All 2 branches covered.">                return !isStrike();</span>
+            }
+<span class="fc" id="L50">            return false;</span>
+        }
+        // Série finale : 3e lancer autorisé uniquement après un strike ou un spare.
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (count &lt; 2) {</span>
+<span class="fc" id="L54">            return true;</span>
+        }
+<span class="fc bfc" id="L56" title="All 2 branches covered.">        if (count == 2) {</span>
+<span class="fc bfc" id="L57" title="All 4 branches covered.">            return isStrike() || isSpare();</span>
+        }
+<span class="fc" id="L59">        return false;</span>
+    }
+
+    // isStrike() n'est appelée que lorsque la série contient au moins un lancer (cf. canRoll()).
+    private boolean isStrike() {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">        return rolls.get(0).getPins() == 10;</span>
+    }
+
+    // isSpare() n'est évaluée que pour une série finale comptant 2 lancers sans strike (cf. canRoll()).
+    private boolean isSpare() {
+<span class="fc bfc" id="L69" title="All 2 branches covered.">        return rolls.get(0).getPins() + rolls.get(1).getPins() == 10;</span>
+    }
+
+    /**
+     * Nombre de quilles encore debout pour le prochain lancer.
+     * Après un strike ou un spare (série finale), un nouveau jeu de quilles est dressé.
+     */
+    private int maxPinsForNextRoll() {
+<span class="fc" id="L77">        int standing = 0;</span>
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        for (Roll roll : rolls) {</span>
+<span class="fc" id="L79">            standing += roll.getPins();</span>
+<span class="fc bfc" id="L80" title="All 2 branches covered.">            if (standing == 10) {</span>
+<span class="fc" id="L81">                standing = 0; // strike ou spare → quilles redressées</span>
+            }
+<span class="fc" id="L83">        }</span>
+<span class="fc" id="L84">        return 10 - standing;</span>
+    }
+
+    public int getScore() {
+<span class="fc" id="L88">        return score;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
