@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Règles métier des salles : nom obligatoire, capacité ≥ 1.
+ */
 @Service
 public class RoomService {
 
@@ -16,10 +19,16 @@ public class RoomService {
     }
 
     public Room create(String name, int capacity) {
-        throw new UnsupportedOperationException("Service non implemente en phase RED");
+        if (name == null || name.isBlank()) {
+            throw new IllegalArgumentException("Le nom de la salle est obligatoire");
+        }
+        if (capacity < 1) {
+            throw new IllegalArgumentException("La capacite doit etre superieure ou egale a 1");
+        }
+        return repository.save(new Room(null, name.trim(), capacity));
     }
 
     public List<Room> findAll() {
-        throw new UnsupportedOperationException("Service non implemente en phase RED");
+        return repository.findAll();
     }
 }

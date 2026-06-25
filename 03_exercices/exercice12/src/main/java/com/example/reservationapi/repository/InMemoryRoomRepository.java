@@ -3,29 +3,47 @@ package com.example.reservationapi.repository;
 import com.example.reservationapi.model.Room;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
+/**
+ * Stockage en mémoire des salles, avec génération d'identifiant à la création.
+ */
 @Repository
 public class InMemoryRoomRepository implements RoomRepository {
 
+    private final AtomicLong sequence = new AtomicLong(0);
+    private final Map<Long, Room> rooms = new ConcurrentHashMap<>();
+
     @Override
     public Room save(Room room) {
-        throw new UnsupportedOperationException("Repository non implemente en phase RED");
+        Long id = room.id() != null ? room.id() : sequence.incrementAndGet();
+        Room stored = new Room(id, room.name(), room.capacity());
+        rooms.put(id, stored);
+        return stored;
     }
 
     @Override
     public Optional<Room> findById(Long id) {
-        throw new UnsupportedOperationException("Repository non implemente en phase RED");
+        return Optional.ofNullable(rooms.get(id));
     }
 
     @Override
     public List<Room> findAll() {
-        throw new UnsupportedOperationException("Repository non implemente en phase RED");
+        return new ArrayList<>(rooms.values())
+                .stream()
+                .sorted(Comparator.comparing(Room::id))
+                .toList();
     }
 
     @Override
     public void deleteAll() {
-        // No-op en phase RED : permet aux tests d'integration de demarrer leur parcours.
+        rooms.clear();
+        sequence.set(0);
     }
 }

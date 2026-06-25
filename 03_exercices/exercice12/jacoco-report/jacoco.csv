@@ -1,0 +1,8 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+reservation-api,com.example.reservationapi.controller,ReservationApiExceptionHandler,7,39,0,0,3,16,1,5,1,5
+reservation-api,com.example.reservationapi.controller,ReservationController,0,43,0,0,0,11,0,4,0,4
+reservation-api,com.example.reservationapi.controller,RoomController,0,36,0,0,0,13,0,3,0,3
+reservation-api,com.example.reservationapi.repository,InMemoryReservationRepository,0,84,0,2,0,21,0,7,0,6
+reservation-api,com.example.reservationapi.repository,InMemoryRoomRepository,16,54,1,1,4,11,2,4,1,4
+reservation-api,com.example.reservationapi.service,ReservationService,2,145,6,16,0,28,6,13,0,8
+reservation-api,com.example.reservationapi.service,RoomService,0,39,1,5,0,9,1,5,0,3

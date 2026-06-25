@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ReservationService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">reservation-api</a> &gt; <a href="index.source.html" class="el_package">com.example.reservationapi.service</a> &gt; <span class="el_source">ReservationService.java</span></div><h1>ReservationService.java</h1><pre class="source lang-java linenums">package com.example.reservationapi.service;
+
+import com.example.reservationapi.exception.ReservationConflictException;
+import com.example.reservationapi.exception.ReservationNotFoundException;
+import com.example.reservationapi.exception.RoomNotFoundException;
+import com.example.reservationapi.model.Reservation;
+import com.example.reservationapi.model.ReservationStatus;
+import com.example.reservationapi.repository.ReservationRepository;
+import com.example.reservationapi.repository.RoomRepository;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+
+/**
+ * Règles métier des réservations : salle existante, réservant obligatoire,
+ * créneau valide, absence de chevauchement, annulation unique.
+ */
+@Service
+public class ReservationService {
+
+    private final RoomRepository roomRepository;
+    private final ReservationRepository reservationRepository;
+
+<span class="fc" id="L24">    public ReservationService(RoomRepository roomRepository, ReservationRepository reservationRepository) {</span>
+<span class="fc" id="L25">        this.roomRepository = roomRepository;</span>
+<span class="fc" id="L26">        this.reservationRepository = reservationRepository;</span>
+<span class="fc" id="L27">    }</span>
+
+    public Reservation create(Long roomId, String requester, LocalDateTime start, LocalDateTime end) {
+<span class="fc bfc" id="L30" title="All 2 branches covered.">        if (roomRepository.findById(roomId).isEmpty()) {</span>
+<span class="fc" id="L31">            throw new RoomNotFoundException(roomId);</span>
+        }
+<span class="pc bpc" id="L33" title="1 of 4 branches missed.">        if (requester == null || requester.isBlank()) {</span>
+<span class="fc" id="L34">            throw new IllegalArgumentException(&quot;Le nom du reservant est obligatoire&quot;);</span>
+        }
+<span class="pc bpc" id="L36" title="2 of 6 branches missed.">        if (start == null || end == null || !end.isAfter(start)) {</span>
+<span class="fc" id="L37">            throw new IllegalArgumentException(&quot;La date de fin doit etre strictement apres la date de debut&quot;);</span>
+        }
+<span class="fc bfc" id="L39" title="All 2 branches covered.">        if (overlapsExistingReservation(roomId, start, end)) {</span>
+<span class="fc" id="L40">            throw new ReservationConflictException(&quot;Le creneau chevauche une reservation existante&quot;);</span>
+        }
+<span class="fc" id="L42">        return reservationRepository.save(</span>
+<span class="fc" id="L43">                new Reservation(null, roomId, requester.trim(), start, end, ReservationStatus.CONFIRMED));</span>
+    }
+
+    public Reservation getById(Long id) {
+<span class="fc" id="L47">        return reservationRepository.findById(id)</span>
+<span class="fc" id="L48">                .orElseThrow(() -&gt; new ReservationNotFoundException(id));</span>
+    }
+
+    public Reservation cancel(Long id) {
+<span class="fc" id="L52">        Reservation reservation = getById(id);</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">        if (reservation.status() == ReservationStatus.CANCELLED) {</span>
+<span class="fc" id="L54">            throw new ReservationConflictException(&quot;La reservation est deja annulee&quot;);</span>
+        }
+<span class="fc" id="L56">        return reservationRepository.save(new Reservation(</span>
+<span class="fc" id="L57">                reservation.id(),</span>
+<span class="fc" id="L58">                reservation.roomId(),</span>
+<span class="fc" id="L59">                reservation.requester(),</span>
+<span class="fc" id="L60">                reservation.start(),</span>
+<span class="fc" id="L61">                reservation.end(),</span>
+                ReservationStatus.CANCELLED));
+    }
+
+    /**
+     * Deux créneaux se chevauchent si début1 &amp;lt; fin2 et début2 &amp;lt; fin1.
+     * Seules les réservations confirmées de la salle sont prises en compte.
+     */
+    private boolean overlapsExistingReservation(Long roomId, LocalDateTime start, LocalDateTime end) {
+<span class="fc" id="L70">        return reservationRepository.findByRoomId(roomId).stream()</span>
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">                .filter(existing -&gt; existing.status() == ReservationStatus.CONFIRMED)</span>
+<span class="pc bpc" id="L72" title="2 of 4 branches missed.">                .anyMatch(existing -&gt; start.isBefore(existing.end()) &amp;&amp; existing.start().isBefore(end));</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>

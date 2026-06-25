@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="fr"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>InMemoryRoomRepository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">reservation-api</a> &gt; <a href="index.source.html" class="el_package">com.example.reservationapi.repository</a> &gt; <span class="el_source">InMemoryRoomRepository.java</span></div><h1>InMemoryRoomRepository.java</h1><pre class="source lang-java linenums">package com.example.reservationapi.repository;
+
+import com.example.reservationapi.model.Room;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
+
+/**
+ * Stockage en mémoire des salles, avec génération d'identifiant à la création.
+ */
+@Repository
+<span class="fc" id="L18">public class InMemoryRoomRepository implements RoomRepository {</span>
+
+<span class="fc" id="L20">    private final AtomicLong sequence = new AtomicLong(0);</span>
+<span class="fc" id="L21">    private final Map&lt;Long, Room&gt; rooms = new ConcurrentHashMap&lt;&gt;();</span>
+
+    @Override
+    public Room save(Room room) {
+<span class="pc bpc" id="L25" title="1 of 2 branches missed.">        Long id = room.id() != null ? room.id() : sequence.incrementAndGet();</span>
+<span class="fc" id="L26">        Room stored = new Room(id, room.name(), room.capacity());</span>
+<span class="fc" id="L27">        rooms.put(id, stored);</span>
+<span class="fc" id="L28">        return stored;</span>
+    }
+
+    @Override
+    public Optional&lt;Room&gt; findById(Long id) {
+<span class="fc" id="L33">        return Optional.ofNullable(rooms.get(id));</span>
+    }
+
+    @Override
+    public List&lt;Room&gt; findAll() {
+<span class="nc" id="L38">        return new ArrayList&lt;&gt;(rooms.values())</span>
+<span class="nc" id="L39">                .stream()</span>
+<span class="nc" id="L40">                .sorted(Comparator.comparing(Room::id))</span>
+<span class="nc" id="L41">                .toList();</span>
+    }
+
+    @Override
+    public void deleteAll() {
+<span class="fc" id="L46">        rooms.clear();</span>
+<span class="fc" id="L47">        sequence.set(0);</span>
+<span class="fc" id="L48">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.14.202510111229</span></div></body></html>
