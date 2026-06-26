@@ -1,0 +1,72 @@
+name: CI Exo12 - API salles et reservations
+
+# Workflow FONCTIONNEL du mono-repo (s'exécute depuis la racine).
+# "paths" le limite à l'exercice 12 ; "working-directory" fait tourner mvn dans le dossier de l'exo.
+
+on:
+  push:
+    branches: [ main, exo12workflow ]
+    paths:
+      - '03_exercices/exercice12/**'
+      - '.github/workflows/exo12-ci.yml'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '03_exercices/exercice12/**'
+      - '.github/workflows/exo12-ci.yml'
+  workflow_dispatch:
+
+defaults:
+  run:
+    working-directory: 03_exercices/exercice12
+
+jobs:
+  build-and-test:
+    name: Tests + rapports (exercice12)
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Récupérer le code du dépôt
+        uses: actions/checkout@v4
+
+      - name: Installer Java 21 avec cache Maven
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Vérifier Java et Maven
+        run: |
+          java -version
+          mvn -version
+
+      - name: Lancer les tests et générer les rapports
+        run: mvn clean verify
+
+      # Les chemins d'upload sont relatifs à la racine du dépôt (pas au working-directory).
+      - name: Publier les rapports de tests (surefire)
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: surefire-reports
+          path: 03_exercices/exercice12/target/surefire-reports/**
+          if-no-files-found: warn
+
+      - name: Publier le rapport de couverture JaCoCo
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: jacoco-report
+          path: 03_exercices/exercice12/target/site/jacoco/**
+          if-no-files-found: warn
+
+      - name: Publier les rapports Cucumber BDD
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-reports
+          path: |
+            03_exercices/exercice12/target/cucumber-report.html
+            03_exercices/exercice12/target/cucumber-report.json
+          if-no-files-found: warn
